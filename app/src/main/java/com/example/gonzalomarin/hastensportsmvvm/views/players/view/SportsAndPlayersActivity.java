@@ -15,7 +15,7 @@ import com.example.gonzalomarin.hastensportsmvvm.views.players.viewmodel.SportsA
 
 import java.util.List;
 
-public class SportsAndPlayersActivity extends AppCompatActivity implements SportsAndPlayersViewModel.OnDataPrepared {
+public class SportsAndPlayersActivity extends AppCompatActivity implements SportsAndPlayersViewModel.OnDataReceived {
 
     private SportsAndPlayersActivityBinding binding;
 
@@ -28,7 +28,7 @@ public class SportsAndPlayersActivity extends AppCompatActivity implements Sport
     }
 
     @Override
-    public void onSendData(List<PlayersModel> response) {
+    public void onReceiveDataSuccess(List<PlayersModel> response) {
         binding.recycler.setLayoutManager(new LinearLayoutManager(this));
         binding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         PlayersAdapter adapater = new PlayersAdapter(response);
@@ -37,6 +37,15 @@ public class SportsAndPlayersActivity extends AppCompatActivity implements Sport
 
     @Override
     public void onReceiveDataFailure(String error) {
-        Snackbar.make(binding.recycler, error, Snackbar.LENGTH_LONG).show();
+        showSnackBar(error);
+    }
+
+    @Override
+    public void onReceiveDataFailure(Integer stringResourceId) {
+        showSnackBar(this.getString(R.string.internal_server_failure));
+    }
+
+    private void showSnackBar(String message) {
+        Snackbar.make(binding.recycler, message, Snackbar.LENGTH_LONG).show();
     }
 }

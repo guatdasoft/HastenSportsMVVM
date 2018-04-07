@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HastenSportsMVVM</string>
+    <string name="internal_server_failure">Internal server failure</string>
 </resources>

@@ -4,6 +4,7 @@ import android.databinding.BaseObservable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.example.gonzalomarin.hastensportsmvvm.R;
 import com.example.gonzalomarin.hastensportsmvvm.services.players.SportAndPlayersServiceModel;
 import com.example.gonzalomarin.hastensportsmvvm.services.players.SportsAndPlayersService;
 import com.example.gonzalomarin.hastensportsmvvm.views.players.model.PlayersModel;
@@ -19,29 +20,34 @@ public class SportsAndPlayersViewModel extends BaseObservable implements Callbac
 
     private static final String FIXED_ID = "66851";
 
-    private OnDataPrepared onDataPrepared;
+    private OnDataReceived onDataReceived;
 
-    public SportsAndPlayersViewModel(OnDataPrepared onDataPrepared) {
+    public SportsAndPlayersViewModel(OnDataReceived onDataReceived) {
         new SportsAndPlayersService().getPlayers(FIXED_ID, this);
-        this.onDataPrepared = onDataPrepared;
+        this.onDataReceived = onDataReceived;
     }
 
     @Override
     public void onResponse(@NonNull Call<List<SportAndPlayersServiceModel>> call, @NonNull Response<List<SportAndPlayersServiceModel>> response) {
         if (response.isSuccessful()) {
-            onDataPrepared.onSendData(manageResponse(response.body()));
+            List<SportAndPlayersServiceModel> playerListFromService = response.body();
+            if (playerListFromService != null && !playerListFromService.isEmpty()) {
+                onDataReceived.onReceiveDataSuccess(manageResponse(playerListFromService));
+            } else {
+                onDataReceived.onReceiveDataFailure(R.string.internal_server_failure);
+            }
         }
     }
 
     @Override
     public void onFailure(@NonNull Call<List<SportAndPlayersServiceModel>> call, @NonNull Throwable t) {
-        onDataPrepared.onReceiveDataFailure(t.getMessage());
+        onDataReceived.onReceiveDataFailure(t.getMessage());
     }
 
-    private List<PlayersModel> manageResponse(List<SportAndPlayersServiceModel> response) {
+    private List<PlayersModel> manageResponse(List<SportAndPlayersServiceModel> playerListFromService) {
         List<PlayersModel> playersList = new ArrayList<>();
         String currentSport = null;
-        for (SportAndPlayersServiceModel sportAndPlayersServiceModel : response) {
+        for (SportAndPlayersServiceModel sportAndPlayersServiceModel : playerListFromService) {
             if (TextUtils.isEmpty(currentSport) || !currentSport.equals(sportAndPlayersServiceModel.getTitle())) {
                 currentSport = sportAndPlayersServiceModel.getTitle();
                 playersList.add(new PlayersModel(currentSport));
@@ -51,9 +57,12 @@ public class SportsAndPlayersViewModel extends BaseObservable implements Callbac
         return playersList;
     }
 
-    public interface OnDataPrepared {
-        void onSendData(List<PlayersModel> players);
+    public interface OnDataReceived {
+
+        void onReceiveDataSuccess(List<PlayersModel> players);
 
         void onReceiveDataFailure(String error);
+
+        void onReceiveDataFailure(Integer stringResourceId);
     }
 }
