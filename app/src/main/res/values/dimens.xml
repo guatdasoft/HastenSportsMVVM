@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Text sizes -->
+    <dimen name="textsize_14">14sp</dimen>
+    <dimen name="textsize_16">16sp</dimen>
+    <dimen name="textsize_18">18sp</dimen>
+    <dimen name="textsize_20">20sp</dimen>
+    <dimen name="textsize_25">25sp</dimen>
+
+    <!-- Dimens for layouts -->
+    <dimen name="imageview_width_and_height">88dp</dimen>
+    <dimen name="default_row_padding">8dp</dimen>
+    <dimen name="margin_top_between_textviews">6dp</dimen>
+
+</resources>
